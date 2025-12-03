@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Natura Project</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-green: #2F4F4F;
+            --soft-sand: #F5F5DC;
+        }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #fcfcfc;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50">
+        <div class="absolute inset-0 bg-white/90 backdrop-blur-md shadow-sm"></div>
+        <div class="container mx-auto px-6 py-4 relative flex justify-between items-center">
+            <!-- Logo -->
+            <a href="index.html" class="text-2xl font-bold text-gray-800 tracking-wider flex items-center gap-2 group">
+                <i data-lucide="arrow-left" class="text-emerald-600 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="serif">Back to Home</span>
+            </a>
+
+            <!-- Nav -->
+            <nav class="hidden md:flex items-center gap-8">
+                <span class="text-emerald-800 font-semibold bg-emerald-50 px-3 py-1 rounded-full text-sm">About Us</span>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow pt-32 pb-20 px-6">
+        <div class="container mx-auto max-w-4xl">
+            
+            <!-- Intro Section -->
+            <div class="text-center mb-16 animate-fade-in">
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6 serif">The Natura Project</h1>
+                <p class="text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto">
+                    Exploring the intersection where <span class="text-emerald-600 font-serif italic">digital craftsmanship</span> meets the organic world.
+                </p>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid gap-8">
+                
+                <!-- Card 1: The Vision -->
+                <div class="glass-card p-8 md:p-12 rounded-2xl shadow-xl transform hover:translate-y-[-5px] transition-transform duration-300">
+                    <div class="flex items-start gap-6">
+                        <div class="hidden md:block p-4 bg-emerald-100 rounded-full text-emerald-700">
+                            <i data-lucide="eye" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4 serif">The Vision</h2>
+                            <p class="text-gray-600 leading-relaxed mb-4">
+                                "Natural Respect" isn't just a design aesthetic; it's a development philosophy. In an era of notification overload and digital noise, we strive to build interfaces that breathe.
+                            </p>
+                            <p class="text-gray-600 leading-relaxed">
+                                Our goal is to create websites that feel like a walk through a quiet forest—immersive, detailed, yet utterly peaceful. We prioritize user privacy and mental clarity over engagement metrics.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: The Tech Stack -->
+                <div class="glass-card p-8 md:p-12 rounded-2xl shadow-xl transform hover:translate-y-[-5px] transition-transform duration-300 delay-100">
+                    <div class="flex items-start gap-6">
+                        <div class="hidden md:block p-4 bg-teal-100 rounded-full text-teal-700">
+                            <i data-lucide="code-2" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4 serif">Under the Hood</h2>
+                            <p class="text-gray-600 leading-relaxed mb-6">
+                                This project utilizes modern web technologies to render organic experiences without heavy assets.
+                            </p>
+                            
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div class="border border-gray-200 p-4 rounded-xl bg-white/50">
+                                    <h3 class="font-bold text-emerald-700 mb-2 flex items-center gap-2">
+                                        <i data-lucide="box" class="w-4 h-4"></i> Three.js
+                                    </h3>
+                                    <p class="text-sm text-gray-500">Renders the 3D backgrounds in real-time using WebGL, ensuring smooth, mathematical beauty.</p>
+                                </div>
+                                <div class="border border-gray-200 p-4 rounded-xl bg-white/50">
+                                    <h3 class="font-bold text-teal-700 mb-2 flex items-center gap-2">
+                                        <i data-lucide="wind" class="w-4 h-4"></i> Tailwind CSS
+                                    </h3>
+                                    <p class="text-sm text-gray-500">Provides a utility-first utility framework that keeps our styling lightweight and responsive.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Privacy Commitment -->
+                <div class="glass-card p-8 md:p-12 rounded-2xl shadow-xl transform hover:translate-y-[-5px] transition-transform duration-300 delay-200">
+                    <div class="flex items-start gap-6">
+                        <div class="hidden md:block p-4 bg-gray-100 rounded-full text-gray-700">
+                            <i data-lucide="lock" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-gray-800 mb-4 serif">Privacy by Design</h2>
+                            <p class="text-gray-600 leading-relaxed">
+                                We believe the user is not the product. Our "Privacy Hub" allows granular control over data, defaulting to the most protective settings. We do not track users across the web, and we store preferences locally.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple Footer -->
+    <footer class="bg-white/80 border-t border-gray-200 py-8 mt-auto">
+        <div class="container mx-auto px-6 text-center text-gray-500 text-sm">
+            <p>&copy; 2023 Natura Digital. Created with <i data-lucide="heart" class="inline w-3 h-3 text-red-400"></i> for the web.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // --------------------------------------------------------
+        // Three.js "Digital Wave" Animation
+        // --------------------------------------------------------
+        const initThree = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Create a Wave of Points
+            const geometry = new THREE.BufferGeometry();
+            const count = 2000;
+            const positions = new Float32Array(count * 3);
+            const scales = new Float32Array(count);
+
+            let i = 0, j = 0;
+            const separation = 1.5;
+            const amountX = 50;
+            const amountY = 40;
+
+            for (let ix = 0; ix < amountX; ix++) {
+                for (let iy = 0; iy < amountY; iy++) {
+                    positions[i] = ix * separation - ((amountX * separation) / 2); // x
+                    positions[i + 1] = 0; // y
+                    positions[i + 2] = iy * separation - ((amountY * separation) / 2); // z
+                    
+                    scales[j] = 1;
+                    
+                    i += 3;
+                    j++;
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
+
+            const material = new THREE.PointsMaterial({
+                color: 0x10b981, // Emerald color
+                size: 0.3,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            camera.position.y = 15;
+            camera.position.z = 30;
+            camera.lookAt(0, 0, 0);
+
+            let countVal = 0;
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                const positions = particles.geometry.attributes.position.array;
+                let i = 0, j = 0;
+
+                for (let ix = 0; ix < amountX; ix++) {
+                    for (let iy = 0; iy < amountY; iy++) {
+                        // Wave calculation
+                        const y = (Math.sin((ix + countVal) * 0.3) * 2) + (Math.sin((iy + countVal) * 0.5) * 2);
+                        
+                        positions[i + 1] = y; // Update Y position
+                        
+                        i += 3;
+                        j++;
+                    }
+                }
+
+                particles.geometry.attributes.position.needsUpdate = true;
+                
+                // Slow rotation of the whole system
+                particles.rotation.y += 0.001;
+                
+                countVal += 0.05;
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        window.onload = initThree;
+    </script>
+</body>
+</html>

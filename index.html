@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Natura - Natural Respect</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --primary-green: #2F4F4F;
+            --soft-sand: #F5F5DC;
+        }
+        
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #fcfcfc;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* 3D Tilt Effect Classes */
+        .tilt-card {
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .tilt-card:hover {
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .tilt-content {
+            transform: translateZ(20px);
+        }
+
+        /* Privacy Dropdown Transition */
+        .privacy-menu {
+            transition: all 0.3s ease-in-out;
+            transform-origin: top right;
+        }
+        
+        .privacy-menu.hidden {
+            opacity: 0;
+            transform: scale(0.95) translateY(-10px);
+            pointer-events: none;
+            display: block; /* Override display:none to allow opacity transition, handled by JS toggling class actually removing hidden or handling opacity */
+            visibility: hidden;
+        }
+
+        .privacy-menu.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
+        }
+
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #4ade80;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #4ade80;
+        }
+        
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-300" id="main-header">
+        <div class="absolute inset-0 bg-white/80 backdrop-blur-md shadow-sm"></div>
+        <div class="container mx-auto px-6 py-4 relative flex justify-between items-center">
+            <!-- Logo -->
+            <a href="/" class="text-2xl font-bold text-gray-800 tracking-wider flex items-center gap-2">
+                <i data-lucide="leaf" class="text-emerald-600"></i>
+                <span class="serif">Natura</span>
+            </a>
+
+            <!-- Desktop Nav & Privacy Trigger -->
+            <nav class="hidden md:flex items-center gap-8">
+                <a href="/about" class="text-gray-600 hover:text-emerald-700 transition-colors">Philosophy</a>
+                <a href="/space" class="text-gray-600 hover:text-emerald-700 transition-colors">Gallery</a>
+                
+                <!-- Privacy Dropdown Container -->
+                <div class="relative group">
+                    <button id="privacy-btn" class="flex items-center gap-2 bg-emerald-50 text-emerald-800 px-4 py-2 rounded-full hover:bg-emerald-100 transition-colors border border-emerald-200">
+                        <i data-lucide="shield" class="w-4 h-4"></i>
+                        <span>Privacy Hub</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- The 3 Options Dropdown -->
+                    <div id="privacy-menu" class="privacy-menu hidden absolute right-0 mt-3 w-72 bg-white rounded-xl shadow-2xl border border-gray-100 p-4 z-50">
+                        <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Privacy Controls</h4>
+                        
+                        <!-- Option 1 -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-800">Strictly Necessary</p>
+                                <p class="text-xs text-gray-500">Required for site function</p>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle1" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer checked:right-0 right-5" checked disabled/>
+                                <label for="toggle1" class="toggle-label block overflow-hidden h-5 rounded-full bg-emerald-400 cursor-pointer"></label>
+                            </div>
+                        </div>
+
+                        <!-- Option 2 -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <p class="text-sm font-medium text-gray-800">Analytics</p>
+                                <p class="text-xs text-gray-500">Help us improve</p>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle2" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 right-5"/>
+                                <label for="toggle2" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+
+                        <!-- Option 3 -->
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-800">Personalization</p>
+                                <p class="text-xs text-gray-500">Tailored content</p>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle3" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300 right-5"/>
+                                <label for="toggle3" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button class="md:hidden p-2 text-gray-600">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section with 3D Background -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <!-- 3D Canvas Container -->
+        <div id="canvas-container"></div>
+        
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <span class="inline-block py-1 px-3 rounded-full bg-emerald-100 text-emerald-800 text-sm font-semibold mb-4 animate-fade-in-up">
+                Sustainability First
+            </span>
+            <h1 class="text-5xl md:text-7xl font-bold text-gray-900 mb-6 serif leading-tight">
+                Respecting the <br> <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500">Natural World</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Experience the harmony between digital innovation and organic beauty. 
+                Explore a world where technology pays tribute to nature.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#gallery" class="px-8 py-3 bg-emerald-700 text-white rounded-full hover:bg-emerald-800 transition-all shadow-lg hover:shadow-emerald-500/30 font-medium">
+                    View Gallery
+                </a>
+                <a href="#about" class="px-8 py-3 bg-white text-emerald-800 border border-emerald-200 rounded-full hover:bg-emerald-50 transition-all font-medium">
+                    Our Mission
+                </a>
+            </div>
+        </div>
+        
+        <!-- Gradient Overlay for smooth transition to next section -->
+        <div class="absolute bottom-0 w-full h-32 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div class="relative">
+                    <div class="absolute -top-4 -left-4 w-24 h-24 bg-emerald-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                    <div class="absolute -bottom-8 -right-4 w-24 h-24 bg-teal-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb7d5fa5?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
+                         alt="Nature Detail" 
+                         class="relative rounded-2xl shadow-2xl z-10 hover:scale-[1.02] transition-transform duration-500">
+                </div>
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6 serif">A Philosophy of <span class="italic text-emerald-600">Balance</span></h2>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        We believe that modern design should not come at the cost of digital clutter. 
+                        Just as a forest ecosystem thrives on balance, our digital spaces should be 
+                        clean, efficient, and respectful of the user's attention.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4">
+                            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                                <i data-lucide="sprout"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900">Organic Growth</h3>
+                                <p class="text-sm text-gray-500">Developing solutions that scale naturally.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4">
+                            <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                                <i data-lucide="mountain"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900">Enduring Foundations</h3>
+                                <p class="text-sm text-gray-500">Built on principles that stand the test of time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section (3D Tilt Cards) -->
+    <section id="gallery" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 serif">Captured Moments</h2>
+                <p class="text-gray-600 max-w-xl mx-auto">Hover over the images to experience a subtle 3D perspective shift, mimicking the depth of the natural world.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Mountain Morning">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Highlands</p>
+                        <h3 class="text-xl font-bold">Morning Mist</h3>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Deep Forest">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Woodland</p>
+                        <h3 class="text-xl font-bold">Sun Rays</h3>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Ocean Shore">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Coastline</p>
+                        <h3 class="text-xl font-bold">Serene Blue</h3>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Autumn Leaves">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Seasons</p>
+                        <h3 class="text-xl font-bold">Golden Canopy</h3>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Remote Valley">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Expedition</p>
+                        <h3 class="text-xl font-bold">Valley Life</h3>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="tilt-card relative h-80 rounded-xl overflow-hidden cursor-pointer group shadow-lg bg-white">
+                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Foggy Forest">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90"></div>
+                    <div class="absolute bottom-0 left-0 p-6 text-white tilt-content">
+                        <p class="text-emerald-300 text-sm font-medium mb-1">Atmosphere</p>
+                        <h3 class="text-xl font-bold">Silent Woods</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 border-t border-gray-800">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <a href="#" class="text-2xl font-bold tracking-wider flex items-center gap-2 mb-4">
+                        <i data-lucide="leaf" class="text-emerald-500"></i>
+                        <span class="serif">Natura</span>
+                    </a>
+                    <p class="text-gray-400 max-w-sm">
+                        Dedicated to preserving the beauty of the natural world through sustainable digital practices and conscious design.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-emerald-500">Explore</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Philosophy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Gallery</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Sustainability</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-emerald-500">Connect</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                            <i data-lucide="instagram" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                            <i data-lucide="twitter" class="w-5 h-5"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">
+                            <i data-lucide="mail" class="w-5 h-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2023 Natura Digital. With respect for the Earth.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // --------------------------------------------------------
+        // Three.js Background Animation
+        // --------------------------------------------------------
+        const initThree = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            // Light fog to blend with the white background
+            scene.fog = new THREE.FogExp2(0xffffff, 0.05);
+
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // Create low-poly abstract natural shapes (Icosahedrons)
+            const geometry = new THREE.IcosahedronGeometry(1, 0);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x10b981, // Emerald 500
+                wireframe: true,
+                transparent: true,
+                opacity: 0.15
+            });
+
+            const particles = [];
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const mesh = new THREE.Mesh(geometry, material);
+                // Random positioning
+                mesh.position.x = (Math.random() - 0.5) * 20;
+                mesh.position.y = (Math.random() - 0.5) * 20;
+                mesh.position.z = (Math.random() - 0.5) * 10 - 5;
+                
+                // Random scale
+                const scale = Math.random() * 0.5 + 0.5;
+                mesh.scale.set(scale, scale, scale);
+                
+                // Custom properties for animation
+                mesh.userData = {
+                    rotationSpeed: {
+                        x: Math.random() * 0.005,
+                        y: Math.random() * 0.005
+                    },
+                    floatSpeed: Math.random() * 0.01 + 0.005,
+                    initialY: mesh.position.y
+                };
+
+                scene.add(mesh);
+                particles.push(mesh);
+            }
+
+            camera.position.z = 5;
+
+            // Mouse interaction
+            let mouseX = 0;
+            let mouseY = 0;
+            
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX - window.innerWidth / 2) * 0.001;
+                mouseY = (event.clientY - window.innerHeight / 2) * 0.001;
+            });
+
+            const animate = () => {
+                requestAnimationFrame(animate);
+
+                particles.forEach(mesh => {
+                    // Constant rotation
+                    mesh.rotation.x += mesh.userData.rotationSpeed.x;
+                    mesh.rotation.y += mesh.userData.rotationSpeed.y;
+
+                    // Floating effect
+                    mesh.position.y = mesh.userData.initialY + Math.sin(Date.now() * 0.001 * mesh.userData.floatSpeed * 100) * 0.5;
+
+                    // Mouse influence
+                    mesh.rotation.x += mouseY * 0.1;
+                    mesh.rotation.y += mouseX * 0.1;
+                });
+
+                // Gentle camera movement
+                camera.position.x += (mouseX * 5 - camera.position.x) * 0.05;
+                camera.position.y += (-mouseY * 5 - camera.position.y) * 0.05;
+                camera.lookAt(scene.position);
+
+                renderer.render(scene, camera);
+            };
+
+            animate();
+
+            // Resize handler
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
+        // Wait for DOM
+        window.onload = initThree;
+
+
+        // --------------------------------------------------------
+        // Privacy Dropdown Logic
+        // --------------------------------------------------------
+        const privacyBtn = document.getElementById('privacy-btn');
+        const privacyMenu = document.getElementById('privacy-menu');
+        const toggles = document.querySelectorAll('.toggle-checkbox');
+        const labels = document.querySelectorAll('.toggle-label');
+
+        // Toggle Menu
+        privacyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (privacyMenu.classList.contains('hidden')) {
+                privacyMenu.classList.remove('hidden');
+                // Small delay to allow CSS transition to work
+                requestAnimationFrame(() => {
+                    privacyMenu.classList.add('visible');
+                });
+            } else {
+                privacyMenu.classList.remove('visible');
+                setTimeout(() => {
+                    privacyMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!privacyMenu.contains(e.target) && !privacyBtn.contains(e.target)) {
+                privacyMenu.classList.remove('visible');
+                setTimeout(() => {
+                    privacyMenu.classList.add('hidden');
+                }, 300);
+            }
+        });
+
+        // Toggle switch styling logic (simple color swap for visual feedback)
+        toggles.forEach((toggle, index) => {
+            toggle.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if(this.checked) {
+                    label.style.backgroundColor = '#34d399'; // Emerald 400
+                } else {
+                    label.style.backgroundColor = '#d1d5db'; // Gray 300
+                }
+                
+                // Show a respectful toast/alert
+                if (!this.disabled) {
+                    // Using a custom small tooltip/toast would be better, but console for now or simple visual cue
+                    console.log(`Privacy preference ${index + 1} updated to ${this.checked}`);
+                }
+            });
+        });
+
+
+        // --------------------------------------------------------
+        // 3D Tilt Effect for Gallery Cards (Vanilla JS)
+        // --------------------------------------------------------
+        const cards = document.querySelectorAll('.tilt-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = ((y - centerY) / centerY) * -10; // Max rotation deg
+                const rotateY = ((x - centerX) / centerX) * 10;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+    </script>
+</body>
+</html>
