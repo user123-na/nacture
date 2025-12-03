@@ -1,0 +1,10 @@
+# hide .html and redirect .html -> extensionless
+RewriteEngine On
+# 1) Redirect any *.html request to extensionless canonical URL
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# 2) If request without extension doesn't match a file/dir, try serving .html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([^/]+)/?$ $1.html [L]
